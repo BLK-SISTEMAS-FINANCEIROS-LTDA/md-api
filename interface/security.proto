@@ -1,0 +1,603 @@
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+syntax = "proto3";
+
+option csharp_namespace = "Blk.MarketData.APIgRPC.Protos.Messages";
+option java_package     = "br.com.blk.marketdata.apigrpc.protos.messages";
+option go_package       = "blk.com.br/marketdata/apigrpc/protos/messages";
+
+package messages;
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Mensagem contendo uma lista de ativos
+message Securities {
+
+    // Lista de ativos
+    repeated Security list = 1;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Detalhes para qualquer ativo negociado
+message Security {
+
+    // ID do ativo, e.g., 200000452882 (para PETR4)
+    int64 security_id = 1;
+
+    // Código de negociação do ativo, e.g., PETR4, DOLF22
+    string symbol = 2;
+
+    // Código da empresa para Equities e código da mercadoria para Commodities,
+    // e.g., PETR, VALE, DOL
+    string asset = 3;
+
+    // Descrição do ativo, e.g., "PETROBRAS   PN      N2"
+    string description = 4;
+
+    // Código ISIN do ativo
+    string isin = 5;
+
+    // Código CFI do ativo
+    string cfi_code = 6;
+
+    // Categoria CFI (ver ISO 10962:2019)
+    CfiCategory cfi_category = 7;
+
+    // Grupo CFI (ver ISO 10962:2019)
+    oneof cfi_group {
+
+        // Grupos para renda variável / ações
+        ECfiGroup e_cfi_group = 101;
+
+        // Grupos para veículos de investimento coletivo
+        CCfiGroup c_cfi_group = 102;
+
+        // Grupos para instrumentos de débito
+        DCfiGroup d_cfi_group = 103;
+
+        // Grupos para direitos ou garantias
+        RCfiGroup r_cfi_group = 104;
+
+        // Grupos para opções listadas
+        OCfiGroup o_cfi_group = 105;
+
+        // Grupos para futuros
+        FCfiGroup f_cfi_group = 106;
+
+        // Grupos para swaps
+        SCfiGroup s_cfi_group = 107;
+
+        // Grupos para opções não listadas e opções complexas listadas
+        HCfiGroup h_cfi_group = 108;
+
+        // Grupos para contratos spot
+        ICfiGroup i_cfi_group = 109;
+
+        // Grupos para contratos a termo
+        JCfiGroup j_cfi_group = 110;
+
+        // Grupos para estratégias
+        KCfiGroup k_cfi_group = 111;
+
+        // Grupos para financiamento
+        LCfiGroup l_cfi_group = 112;
+
+        // Grupos para instrumentos de referência
+        TCfiGroup t_cfi_group = 113;
+
+        // Grupos para categoria outros (diversos)
+        MCfiGroup m_cfi_group = 114;
+    }  
+
+    // Data de vencimento no formato AAAA-MM-DD, e.g., 2020-12-31.
+    // Retorna uma string vazia se não aplicável
+    string maturity_date = 8;
+
+    // Código ISO do país, e.g., BR
+    string country = 9;
+
+    // Código ISO da moeda, e.g., BRL
+    string currency = 10;
+
+    // Código ISO da bolsa, e.g., BVMF
+    string exchange = 11;
+
+    // Número padrão de ativos a serem negociados
+    double round_lot = 12;
+
+    // Número de casas decimais do preço
+    double tick_size_denominator = 13;
+
+    // Especifica a taxa ou fator de multiplicação para conversão de unidades 
+    // "nominais" (e.g., contratos) para unidades totais (e.g., ações). Aplicável a 
+    // renda fixa, notas conversíveis, derivativos e etc. 
+    double contract_multiplier = 14;
+
+    // Incremento mínimo de preço
+    double min_price_increment = 15;
+
+    // Tipo de opção. Se o ativo não for uma opção, contém o valor 'OPTION_TYPE_NONE'
+    OptionType option_type = 16;
+
+    // Estilo de opção. Se o ativo não for uma opção, contém o valor 'OPTION_STYLE_NONE'
+    OptionStyle option_style = 17;
+
+    // Preço de exercício de opção, se ativo não for opção, é igual a 0
+    double strike_price = 18; 
+
+    // Grupo de negociação
+    string security_group = 19;
+
+    // Tipo do ativo
+    string security_type = 20;
+
+    // Subtipo do ativo
+    string security_sub_type = 21;
+
+    // Ativos subjacentes
+    repeated UnderlyingSecurityItem underlying_securities = 22;    
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Item de ativo subjacente
+message UnderlyingSecurityItem {
+        
+    // ID do ativo subjacente, e.g., 200000452882 (para PETR4)
+    int64 security_id = 1;
+
+    // Código de negociação do ativo subjacente, e.g., PETR4, VALE3
+    string symbol = 2;
+
+    // Indica o percentual com o qual este ativo compõe o índice. 
+    // Campo requerido caso se trate de um instrumento de índice de ações.
+    double index_percentage = 3;
+
+    // Quantidade teórica do ativo que compõe o índice. 
+    // Este valor é utilizado para instrumentos de índice.
+    double index_theoretical_quantity = 4;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Estilo de opção
+enum OptionStyle {
+
+    // Nenhum
+    OPTION_STYLE_NONE = 0;
+
+    // Americana
+    AMERICAN = 1;
+
+    // Europeia
+    EUROPEAN = 2;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Tipo de opção
+enum OptionType {
+
+    // Nenhum, ativo não é uma opção
+    OPTION_TYPE_NONE = 0;
+
+    // Opção de compra
+    CALL = 1;
+
+    // Opção de venda
+    PUT = 2;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Categoria CFI baseada na primeira letra do código CFI (ver ISO-10962)
+enum CfiCategory {
+
+    // X - Nenhum, ativo não possui código CFI
+    CFI_CATEGORY_NONE = 0;
+
+    // E - Renda variável / ações
+    EQUITIES = 1;
+
+    // C - Veículos de investimento coletivo
+    COLLECTIVE_INVESTMENT_VEHICLES = 2;
+
+    // D - Instrumentos de débito
+    DEBT_INSTRUMENTS = 3;
+
+    // R - Direitos ou garantias
+    ENTITLEMENTS_OR_WARRANTS = 4;
+
+    // O - Opções listadas
+    LISTED_OPTIONS = 5;
+
+    // F - Futuros
+    FUTURES = 6;
+
+    // S - Swaps
+    SWAPS = 7;
+
+    // H - Opções não listadas e opções complexas listadas
+    NON_LISTED_AND_COMPLEX_LISTED_OPTIONS = 8;
+
+    // I - Contratos spot
+    SPOTS = 9;
+
+    // J - Contratos a termo
+    FORWARDS = 10;
+
+    // K - Estratégias
+    STRATEGIES = 11;
+
+    // L - Financiamento
+    FINANCING = 12;
+
+    // T - Instrumentos de referência
+    REFERENTIAL_INSTRUMENTS = 13;
+
+    // M - Outros (diversos)
+    OTHERS = 100;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Grupos CFI para renda variável/ações (E)
+enum ECfiGroup {
+
+    // EX - Não aplicável / indefinido
+    E_CFI_GROUP_UNDEFINED = 0;
+
+    // ES - Ações ordinárias
+    ORDINARY_SHARES = 1;
+
+    // EP - Ações preferenciais
+    PREFERRED_SHARES = 2;
+
+    // EC - Ações ordinárias conversíveis
+    ORDINARY_CONVERTIBLE_SHARES = 3;
+
+    // EF - Ações preferenciais conversíveis
+    PREFERRED_CONVERTIBLE_SHARES = 4;
+
+    // EL - Unidades de sociedade limitada
+    LIMITED_PARTNERSHIP_UNITS = 5;
+
+    // ED - Recibo de depósito em ações
+    DEPOSITORY_RECEIPTS_ON_EQUITIES = 6;
+
+    // EY - Investimentos estruturados
+    STRUCTURED_INSTRUMENTS = 7;
+
+    // EM - Outros
+    E_CFI_GROUP_OTHERS = 100;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Grupos CFI para veículos de investimento coletivos (C)
+enum CCfiGroup {
+
+    // CX - Não aplicável / indefinido
+    C_CFI_GROUP_UNDEFINED = 0;
+
+    // CI - Fundos de investimento padrões ou fundos mútuos
+    STANDARD_INVESTMENT_FUNDS_OR_MUTUAL_FUNDS = 1;
+
+    // CH - Fundos multimercado (hedge funds)
+    HEDGE_FUNDS = 2;
+
+    // CB - Fundos imobiliários (FII)
+    REAL_ESTATE_INVESTMENT_TRUSTS = 3;
+
+    // CE - Fundos negociados em bolsa (ETF)
+    EXCHANGE_TRADED_FUNDS = 4;
+
+    // CS - Fundos de pensão
+    PENSION_FUNDS = 5;
+
+    // CF - Fundos de fundos
+    FUNDS_OF_FUNDS = 6;
+
+    // CP - Fundos de private equity
+    PRIVATE_EQUITY_FUNDS = 7;
+
+    // CM - Outros (diversos)
+    C_CFI_GROUP_OTHERS = 100;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Grupos CFI para instrumentos de débito (D)
+enum DCfiGroup {
+
+    // DX - Não aplicável / indefinido
+    D_CFI_GROUP_UNDEFINED = 0;
+
+    // DB - Títulos de dívida (bonds)
+    BONDS = 1;
+
+    // DC - Títulos de dívida conversíveis
+    CONVERTIBLE_BONDS = 2;
+
+    // DW - Títulos de dívida com garantia acoplada
+    BONDS_WITH_WARRANTS_ATTACHED = 3;
+
+    // DT - Notas de médio prazo
+    MEDIUM_TERM_NOTES = 4;
+
+    // DY - Instrumentos de mercado de capitais
+    MONEY_MARKET_INSTRUMENTS = 5;
+
+    // DS - Produtos estruturados com proteção de capital
+    STRUCTURED_PRODUCTS_WITH_CAPITAL_PROTECTION = 6;
+
+    // DE - Produtos estruturados sem proteção de capital
+    STRUCTURED_PRODUCTS_WITHOUT_CAPITAL_PROTECTION = 7;
+
+    // DG - Ativos com proteção hipotecária
+    MORTGAGE_BACKED_SECURITIES = 8;
+
+    // DA - Títulos com ativo de proteção
+    ASSET_BACKED_SECURITIES = 9;
+
+    // DN - Títulos de dívida municipal
+    MUNICIPAL_BONDS = 10;
+
+    // DD - Recibos de depósitos em instrumentos de dívida
+    DEPOSITARY_RECEIPTS_ON_DEBT_INSTRUMENTS = 11;
+
+    // DM - Outros (diversos)
+    D_CFI_GROUP_OTHERS = 100;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Grupos CFI para direitos ou garantias (R)
+enum RCfiGroup {
+
+    // RX - Não aplicável / indefinido
+    R_CFI_GROUP_UNDEFINED = 0;
+
+    // RA - Direitos de atribuição
+    ALLOTMENT_RIGHTS = 1;
+
+    // RS - Direitos de subscrição
+    SUBSCRIPTION_RIGHTS = 2;
+
+    // RP - Direitos de compra
+    PURCHASE_RIGHTS = 3;
+
+    // RW - Garantias
+    WARRANTS = 4;
+
+    // RF - Mini certificados de futuro/certificados de alavancagem constante
+    MINI_FUTURE_OR_CONSTANT_LEVERAGE_CERTIFICATES = 5;
+
+    // RD - Recibos de depósito em direito
+    DEPOSITORY_RECEIPTS_ON_ENTITLEMENTS = 6;
+
+    // RM - Outros (diversos)
+    R_CFI_GROUP_OTHERS = 100;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Grupos CFI para opções listadas (O)
+enum OCfiGroup {
+
+    // OX - Não aplicável / indefinido
+    O_CFI_GROUP_UNDEFINED = 0;
+
+    // OC - Opções de compra (call)
+    CALL_OPTIONS = 1;
+
+    // OP - Opções de venda (put)
+    PUT_OPTIONS = 2;
+
+    // OM - Outros (diversos)
+    O_CFI_GROUP_OTHERS = 100;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Grupos CFI para futuros (F)
+enum FCfiGroup {
+
+    // FX - Não aplicável / indefinido
+    F_CFI_GROUP_UNDEFINED = 0;
+
+    // FF - Futuros financeiros
+    FINANCIAL_FUTURES = 1;
+
+    // FC - Futuros de commodities
+    COMMODITIES_FUTURES = 2;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Grupos CFI para swaps (S)
+enum SCfiGroup {
+
+    // SX - Não aplicável / indefinido
+    S_CFI_GROUP_UNDEFINED = 0;
+
+    // SR - Taxas
+    S_CFI_GROUP_RATES = 1;
+
+    // ST - Commodities
+    S_CFI_GROUP_COMMODITIES = 2;
+
+    // SE - Renda variável/ação
+    S_CFI_GROUP_EQUITY = 3;
+
+    // SC - Crédito
+    S_CFI_GROUP_CREDIT = 4;
+
+    // SF - Câmbio
+    S_CFI_GROUP_FOREIGN_EXCHANGE = 5;
+
+    // SM - Outros (diversos)
+    S_CFI_GROUP_OTHERS = 100;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Grupos CFI para opções não listadas e opções complexas listadas (H)
+enum HCfiGroup {
+
+    // HX - Não aplicável / indefinido
+    H_CFI_GROUP_UNDEFINED = 0;
+
+    // HR - Taxas
+    H_CFI_GROUP_RATES = 1;
+
+    // HT - Commodities
+    H_CFI_GROUP_COMMODITIES = 2;
+
+    // HE - Renda variável/ação
+    H_CFI_GROUP_EQUITY = 3;
+
+    // HC - Crédito
+    H_CFI_GROUP_CREDIT = 4;
+
+    // HF - Câmbio
+    H_CFI_GROUP_FOREIGN_EXCHANGE = 5;
+
+    // HM - Outros (diversos)
+    H_CFI_GROUP_OTHERS = 100;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Grupos CFI para contratos spot (I)
+enum ICfiGroup {
+
+    // IX - Não aplicável / indefinido
+    I_CFI_GROUP_UNDEFINED = 0;
+
+    // IF - Câmbio
+    I_CFI_GROUP_FOREIGN_EXCHANGE = 1;
+
+    // IT - Commodities
+    I_CFI_GROUP_COMMODITIES = 2;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Grupos CFI para contratos a termo (J)
+enum JCfiGroup {
+
+    // JX - Não aplicável / indefinido
+    J_CFI_GROUP_UNDEFINED = 0;
+
+    // JR - Taxas
+    J_CFI_GROUP_RATES = 1;
+
+    // JT - Commodities
+    J_CFI_GROUP_COMMODITIES = 2;
+
+    // JE - Renda variável/ação
+    J_CFI_GROUP_EQUITY = 3;
+
+    // JC - Crédito
+    J_CFI_GROUP_CREDIT = 4;
+
+    // JF - Câmbio
+    J_CFI_GROUP_FOREIGN_EXCHANGE = 5;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Grupos CFI para estratégias (K)
+enum KCfiGroup {
+
+    // KX - Não aplicável / indefinido
+    K_CFI_GROUP_UNDEFINED = 0;
+
+    // KR - Taxas
+    K_CFI_GROUP_RATES = 1;
+
+    // KT - Commodities
+    K_CFI_GROUP_COMMODITIES = 2;
+
+    // KE - Renda variável/ação
+    K_CFI_GROUP_EQUITY = 3;
+
+    // KC - Crédito
+    K_CFI_GROUP_CREDIT = 4;
+
+    // KF - Câmbio
+    K_CFI_GROUP_FOREIGN_EXCHANGE = 5;
+
+    // KY - Ativos misturados
+    K_CFI_GROUP_MIXED_ASSETS = 6;
+
+    // KM - Outros (diversos)
+    K_CFI_GROUP_OTHERS = 100;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Grupos CFI para financiamento (L)
+enum LCfiGroup {
+
+    // LX - Não aplicável / indefinido
+    L_CFI_GROUP_UNDEFINED = 0;
+
+    // LL - Empréstimo/Leasing
+    LOAN_LEASE = 1;
+
+    // LR - Operação compromissada
+    REPURCHASE_AGREEMENTS = 2;
+
+    // LS - Aluguel de ativos
+    SECURITIES_LENDING = 3;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Grupos CFI para instrumentos de referência (T)
+enum TCfiGroup {
+
+    // TX - Não aplicável / indefinido
+    T_CFI_GROUP_UNDEFINED = 0;
+
+    // TC - Moedas
+    CURRENCIES = 1;
+
+    // TT - Commodities
+    COMMODITIES = 2;
+
+    // TR - Taxa de juros
+    INTEREST_RATES = 3;
+
+    // TI - Índices
+    INDICES = 4;
+
+    // TB - Cestas
+    BASKETS = 5;
+
+    // TD - Dividendos de ações
+    STOCK_DIVIDENDS = 6;
+
+    // TM - Outros (diversos)
+    T_CFI_GROUP_OTHERS = 7;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Grupos CFI para outros (diversos) (M)
+enum MCfiGroup {
+
+    // MX - Não aplicável / indefinido
+    M_CFI_GROUP_UNDEFINED = 0;
+
+    // MC - Instrumentos combinados
+    COMBINED_INSTRUMENTS = 1;
+
+    // MM - Outros ativos
+    OTHER_ASSETS = 2;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————

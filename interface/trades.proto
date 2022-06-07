@@ -1,0 +1,85 @@
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+syntax = "proto3";
+
+option csharp_namespace = "Blk.MarketData.APIgRPC.Protos.Messages";
+option java_package     = "br.com.blk.marketdata.apigrpc.protos.messages";
+option go_package       = "blk.com.br/marketdata/apigrpc/protos/messages";
+
+import "common.proto";
+
+package messages;
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Negócio realizado
+message Trade {
+
+    // Código de negociação do ativo
+    string symbol = 1;
+
+    // Data e hora de realização do negócio
+    string date_time = 2;
+
+    // ID do negócio
+    int64 trade_id = 3;
+
+    // Preço
+    double price = 4;
+
+    // Quantidade
+    double quantity = 5;
+
+    // Volume
+    double volume = 6;
+
+    // Lado agressor do negócio
+    TradeAggressor trade_aggressor = 7;
+
+    // ID da corretora do lado de compra
+    int64 buyer_broker_id = 8;
+
+    // ID da corretora do lado de venda
+    int64 seller_broker_id = 9;
+
+    // Mudança de preço em relação ao fechamento do dia anterior
+    double change = 10;
+
+    // Mudança de preço percentual em relação ao fechamento do dia anterior
+    double change_percentage = 11;
+
+    // Negócio foi cancelado
+    bool is_canceled = 12;
+
+    // Negócio direto
+    bool is_crossed = 13;
+
+    // Negócio realizado no horário after market
+    bool is_after_market = 14;
+
+    // Negócio realizado em leilão
+    bool is_auction = 15;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Lista de negócios realizados
+message Trades {
+
+    // Lista de negócios realizados
+    repeated Trade list = 1;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Mensagem para requisição de negócios realizados
+message TradesRequest {
+
+    // Número de negócios a serem retornados
+    int32 length = 1;
+
+    // Símbolo ou ID do ativo
+    SecuritySymbolOrId symbol_or_id = 2;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————

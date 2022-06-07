@@ -1,0 +1,26 @@
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+syntax = "proto3";
+
+option csharp_namespace = "Blk.MarketData.APIgRPC.Protos.Messages";
+option java_package     = "br.com.blk.marketdata.apigrpc.protos.messages";
+option go_package       = "blk.com.br/marketdata/apigrpc/protos/messages";
+
+package messages;
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Status de assinatura
+message SubscriptionStatus
+{
+    // Limite diário de assinaturas
+    int32 limit = 1;
+
+    // Número de assinaturas no dia atual
+    int32 number_of_subscriptions = 2;
+
+    // Assinaturas no dia atual
+    repeated string subscribed_securities = 3;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————

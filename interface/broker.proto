@@ -1,0 +1,35 @@
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+syntax = "proto3";
+
+option csharp_namespace = "Blk.MarketData.APIgRPC.Protos.Messages";
+option java_package     = "br.com.blk.marketdata.apigrpc.protos.messages";
+option go_package       = "blk.com.br/marketdata/apigrpc/protos/messages";
+
+package messages;
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Mensagem contendo uma lista de corretoras
+message Brokers {
+
+    // Lista de corretoras
+    repeated Broker list = 1;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Dados para uma corretora
+message Broker {
+
+    // ID da corretora
+    int64 id = 1;
+
+    // Nome abreviado da corretora
+    string short_name = 2; 
+
+    // Nome completo da corretora
+    string name = 3;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————

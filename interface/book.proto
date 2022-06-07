@@ -1,0 +1,234 @@
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+syntax = "proto3";
+
+option csharp_namespace = "Blk.MarketData.APIgRPC.Protos.Messages";
+option java_package     = "br.com.blk.marketdata.apigrpc.protos.messages";
+option go_package       = "blk.com.br/marketdata/apigrpc/protos/messages";
+
+import "common.proto";
+
+package messages;
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Mensagem para requisição de book
+message BookRequest {
+
+    // Símbolo ou ID do ativo
+    SecuritySymbolOrId symbol_or_id = 1;
+
+    // Opcional - Profundidade máxima do book a ser retornado
+    int32 max_depth = 2;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Livro de ofertas agregado por preço
+message BookByPrice {
+
+   // Símbolo do ativo
+   string symbol = 1;
+
+   // ID do ativo
+   int64 security_id = 2;
+
+   // Data e hora do instantâneo (snapshot)
+   string date_time = 3;
+
+   // Ordens de compra agregadas por preço
+   repeated Entry bids = 4;
+
+   // Ordens de venda agregadas por preço
+   repeated Entry asks = 5;
+
+   // Linha para um dos lados do book por preço
+   message Entry {
+
+       // Preço
+       double price = 1;
+
+       // Quantidade total
+       double total_quantity = 2;
+
+       // Número de ordens
+       int64 number_of_orders = 3;
+   }
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Incremento para livro de ofertas agregado por preço
+message BookByPriceIncrement {
+
+    oneof event {
+
+        // Livro agregado de ofertas, dados prévios devem ser sobrescritos
+        BookByPrice whole_book = 1;
+
+        // Nova linha a ser adicionada ao livro
+        Line new_line = 2;
+
+        // Linhas a ser atualizada
+        Line update_line = 3;
+
+        // Linha a ser deletada
+        LineIndexAndID delete_line = 4;
+
+        // Linhas a serem deletadas do topo do livro
+        TopLinesToDelete delete_top_lines = 5;
+    }
+
+    // Linha a ser adicionada ou atualizada
+    message Line {
+
+        // Ponta da negociação
+        BookSide side = 1;
+
+        // Índice da linha
+        int32 index = 2;
+
+        // Linha completa
+        BookByPrice.Entry entry = 3;
+    }
+
+    // Índice e ID de uma linha
+    message LineIndexAndID {
+
+        // Ponta da negociação
+        BookSide side = 1;
+
+        // Índice da linha
+        int32 index = 2;
+    }
+
+    // Linhas a serem deletadas do topo do livro de ofertas
+    message TopLinesToDelete {
+
+        // Ponta da negociação
+        BookSide side = 1;
+
+        // Número de linhas a serem deletadas
+        int32 number_of_lines = 2;
+    }
+}  
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Livro de ofertas
+message BookByOrder {
+
+    // Símbolo do ativo
+    string symbol = 1;
+
+    // ID do ativo
+    int64 security_id = 2;
+
+    // Data e hora do instantâneo (snapshot)
+    string date_time = 3;
+
+    // Ordens de compra
+    repeated Entry bids = 4;
+
+    // Ordens de venda
+    repeated Entry asks = 5;
+
+    // Linha para um dos lados do book de ofertas
+    message Entry {
+
+        // Data e hora de envio da ordem
+        string date_time = 1;
+
+        // Preço da ordem
+        double price = 2;
+
+        // Quantidade da ordem
+        double quantity = 3;
+
+        // ID da ordem
+        int64 order_id = 4;
+
+        // ID da corretora emissora da ordem
+        int64 broker_id = 5;
+    }
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Incremento para livro de ofertas completo
+message BookByOrderIncrement {
+
+    // ID do incremento - sequencial, incrementos subsequentes podem ter o mesmo ID
+    int64 increment_id = 15;
+
+    oneof event {
+
+        // Livro completo, dados prévios devem ser sobrescritos
+        BookByOrder whole_book = 1;
+
+        // Limpar livro, todas as linhas devem ser deletadas em ambos os lados
+        Empty clear = 2;
+
+        // Nova linha a ser adicionada ao livro
+        Line new_line = 3;
+
+        // Linhas a ser atualizada
+        Line update_line = 4;
+
+        // Linha a ser deletada
+        LineIndexAndID delete_line = 5;
+
+        // Linhas a serem deletadas do topo do livro
+        TopLinesToDelete delete_top_lines = 6;
+    }
+
+    // Linha a ser adicionada ou atualizada
+    message Line {
+
+        // Ponta da negociação
+        BookSide side = 1;
+
+        // Índice da linha
+        int32 index = 2;
+
+        // Linha completa
+        BookByOrder.Entry entry = 3;
+    }
+
+    // Índice e ID de uma linha
+    message LineIndexAndID {
+
+        // Ponta da negociação
+        BookSide side = 1;
+
+        // Índice da linha
+        int32 index = 2;
+
+        // ID da ordem
+        int64 order_id = 3;
+    }
+
+    // Linhas a serem deletadas do topo do livro de ofertas
+    message TopLinesToDelete {
+
+        // Ponta da negociação
+        BookSide side = 1;
+
+        // Número de linhas a serem deletadas
+        int32 number_of_lines = 2;
+    }
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Lado agressor na negociação
+enum BookSide {
+
+    // Vendedor
+    ASK = 0;
+
+    // Comprador
+    BID = 1;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————

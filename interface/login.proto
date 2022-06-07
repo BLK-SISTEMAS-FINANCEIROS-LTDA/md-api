@@ -1,0 +1,35 @@
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+syntax = "proto3";
+
+option csharp_namespace = "Blk.MarketData.APIgRPC.Protos.Messages";
+option java_package     = "br.com.blk.marketdata.apigrpc.protos.messages";
+option go_package       = "blk.com.br/marketdata/apigrpc/protos/messages";
+
+package messages;
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Mensagem de login
+message Login {
+
+    // Nome de usuário
+    string username = 1;
+
+    // Senha
+    string password = 2;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Token JWT de acesso
+message AccessToken {
+
+    // Token JWT
+    string token = 1;
+
+    // Tipo de token JWT
+    string token_type = 2;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————

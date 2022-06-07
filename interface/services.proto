@@ -1,0 +1,98 @@
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+syntax = "proto3";
+
+option csharp_namespace = "Blk.MarketData.APIgRPC.Protos";
+option java_package     = "br.com.blk.marketdata.apigrpc.protos";
+option go_package       = "blk.com.br/marketdata/apigrpc/protos";
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+import "book.proto";
+import "broker.proto";
+import "common.proto";
+import "login.proto";
+import "quote.proto";
+import "security.proto";
+import "subscription.proto";
+import "trades.proto";
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Serviço de autenticação
+service AuthenticationSvc {
+
+    // Login no sistema de autenticação
+    rpc Login (.messages.Login) returns (.messages.AccessToken);
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Chamadas de procedimento remoto para dados de livro de ofertas
+service BooksSvc {
+
+    // Retorna um instantâneo de dados de livro de ofertas agregado para 
+    // determinado ativo
+    rpc GetBookByPriceSnapshot (.messages.BookRequest) returns (.messages.BookByPrice);
+
+    // Retorna um instantâneo de dados de livro de ofertas completo para 
+    // determinado ativo
+    rpc GetBookByOrderSnapshot (.messages.BookRequest) returns (.messages.BookByOrder);
+
+    // Retorna um fluxo de dados de livro de ofertas completo para determinado ativo
+    rpc GetBookByOrderStream (.messages.BookRequest) returns (stream .messages.BookByOrderIncrement);  
+
+    // Retorna um fluxo de dados de livro de ofertas agregado para determinado ativo
+    rpc GetBookByPriceStream (.messages.BookRequest) returns (stream .messages.BookByPriceIncrement);  
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Chamadas de procedimento remoto para dados de cotação
+service QuotesSvc {
+
+    // Retorna um instantâneo de dados de cotação para determinado ativo
+    rpc GetQuoteSnapshot (.messages.SecuritySymbolOrId) returns (.messages.Quote);
+
+    // Retorna um fluxo de dados de cotação para determinado ativo.
+    // Primeiro valor retornado é sempre um instantâneo (snapshot).
+    rpc GetQuoteStream (.messages.SecuritySymbolOrId) returns (stream .messages.QuoteUpdate);
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Chamadas de procedimento remoto para ativos
+service ReferenceDataSvc {
+
+    // Retorna uma lista de todos os ativos disponíveis na API
+    rpc GetSecurities (.messages.Empty) returns (.messages.Securities);
+
+    // Retorna uma lista de corretoras na API
+    rpc GetBrokers (.messages.Empty) returns (.messages.Brokers);    
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Chamadas de procedimento para monitoramento de status de assinatura
+service SubscriptionSvc {
+
+    // Retorna status de assinatura
+    rpc GetSubscriptionStatus (.messages.Empty) returns (.messages.SubscriptionStatus);
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Chamadas de procedimento para negócios realizados
+service TradesSvc {
+
+    // Retorna uma lista dos negócios mais recentes realizados no dia corrente 
+    // com extensão customizada. Length = -1 retorna todos os negócios
+    rpc GetTradesSnapshot (.messages.TradesRequest) returns (.messages.Trades);
+
+    // Retorna um fluxo de dados em tempo real contendo os negócios realizados.
+    // Dados podem ser precedidos pelos negócios realizados anteriormente à chamada,
+    // bastando especificar o parâmetro length (-1 para todos).
+    rpc GetTradesStream (.messages.TradesRequest) returns (stream .messages.Trade);
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————

@@ -1,0 +1,49 @@
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+syntax = "proto3";
+
+option csharp_namespace = "Blk.MarketData.APIgRPC.Protos.Messages";
+option java_package     = "br.com.blk.marketdata.apigrpc.protos.messages";
+option go_package       = "blk.com.br/marketdata/apigrpc/protos/messages";
+
+package messages;
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Esta mensagem é usada por serviços que requerem apenas o código de negociação 
+// ou o ID do ativo como entrada
+message SecuritySymbolOrId {
+
+    // Símbolo ou código de negociação do ativo
+    oneof symbol_or_id {
+
+        // Código de negociação, e.g., PETR4, VALE3
+        string symbol = 1;
+
+        // ID do ativo, e.g., 200000452882 (para PETR4)
+        int64 id = 2;
+    }    
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Mensagem vazia utilizada por chamadas de procedimento que não requerem entrada 
+// ou que não produzem saída
+message Empty {}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Lado agressor na negociação
+enum TradeAggressor {
+
+    // Nenhum
+    TRADE_AGGRESSOR_NONE = 0;
+
+    // Comprador
+    BUYER = 1;
+
+    // Vendedor
+    SELLER = 2;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————

@@ -1,0 +1,306 @@
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+syntax = "proto3";
+
+option csharp_namespace = "Blk.MarketData.APIgRPC.Protos.Messages";
+option java_package     = "br.com.blk.marketdata.apigrpc.protos.messages";
+option go_package       = "blk.com.br/marketdata/apigrpc/protos/messages";
+
+import "common.proto";
+
+package messages;
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Dados de cotação
+message Quote {
+
+    // Data e hora do último negócio
+    string date_time = 1;
+
+    // ID do último negócio
+    int64 last_trade_id = 2;
+
+    // Preço do último negócio
+    double last_trade_price = 3;
+
+    // Quantidade do último negócio
+    double last_trade_quantity = 4;
+
+    // ID da corretora do último negócio no lado de compra
+    int64 last_trade_buy_broker_id = 5;
+
+    // ID da corretora do último negócio no lado de venda
+    int64 last_trade_sell_broker_id = 6;
+
+    // Lado agressor do último negócio
+    TradeAggressor last_trade_aggressor = 7;
+
+    // Quantidade da ordem agressora de compra que deu origem ao último negócio
+    double buyer_aggression_quantity = 8;
+
+    // Quantidade da ordem agressora de venda que deu origem ao último negócio
+    double seller_aggression_quantity = 9;
+
+    // Percentual da última ordem agressora de compra que foi executado
+    double buyer_aggression_rate = 10;
+
+    // Percentual da última ordem agressora de venda que foi executado
+    double seller_aggression_rate = 11;
+
+    // Preço de compra atual (topo do book)
+    double bid_price = 13;
+
+    // Quantidade de compra atual (topo do book)
+    double bid_quantity = 14;
+
+    // Preço de venda atual (topo do book)
+    double ask_price = 15;
+
+    // Quantidade de venda atual (topo do book)
+    double ask_quantity = 16;
+
+    // Preço de fechamento anterior
+    double previous_close_price = 17;
+
+    // Preço de abertura
+    double open_price = 18;
+
+    // Preço máximo do dia
+    double high = 19;
+
+    // Preço mínimo do dia
+    double low = 20;
+
+    // Número de negócios realizados no dia
+    int32 number_of_trades = 21;
+
+    // Quantidade negociada no dia
+    double quantity = 22;
+
+    // Volume negociado no dia
+    double volume = 23;
+
+    // Preço médio do dia ponderado por volume
+    double vwap = 24;
+
+    // Variação de preço relativa ao fechamento dia anterior
+    double change = 25;
+
+    // Variação percentual de preço relativa ao fechamento dia anterior
+    double change_percent = 26;
+
+    // Preço de liquidação anterior
+    double previous_settlement_price = 27;
+
+    // Preço de liquidação
+    double settlement_price = 28;
+
+    // Data teórica de abertura
+    string theoretical_open_date_time = 29;
+
+    // Preço teórico
+    double theoretical_price = 30;
+
+    // Quantidade teórica
+    double theoretical_quantity = 31;
+
+    // Mudança de preço teórico
+    double theoretical_change = 32;
+
+    // Mudança de preço teórico em percentual
+    double theoretical_change_percentage = 33;
+
+    // Quantidade de desbalanceamento
+    double imbalance_quantity = 34;
+
+    // Condição desbalanceamento
+    ImbalanceCondition imbalance_condition = 35;
+
+    // Túnel de rejeição máximo
+    double hard_limit_high = 36;
+
+    // Túnel de rejeição mínimo
+    double hard_limit_low = 37;
+
+    // Banda de rejeição: percentual de alta
+    double rejection_band_high_percentage = 38;
+
+    // Banda de rejeição: percentual de baixa
+    double rejection_band_low_percentage = 39;
+
+    // Banda de rejeição: alta
+    double rejection_band_high = 40;
+
+    // Banda de rejeição: baixa
+    double rejection_band_low = 41;
+
+    // Banda de leilão: percentual de alta
+    double auction_band_high_percent = 42;
+
+    // Banda de leilão: percentual de baixa
+    double auction_band_low_percent = 43;
+
+    // Banda de leilão: alta
+    double auction_band_high = 44;
+
+    // Banda de leilão: baixa
+    double auction_band_low = 45;
+
+    // Limite estático de alta
+    double static_limit_high = 46;
+
+    // Limite estático de baixa
+    double static_limit_low = 47;
+
+    // Preço de referência
+    double reference_price = 48;
+
+    // Preço de referência para compra
+    double buy_reference_price = 49;
+
+    // Preço de referência para venda
+    double sell_reference_price = 50;
+
+    // Volume médio diário de negociação 
+    double average_daily_traded_volume = 51;
+
+    // Volume máximo de negociação
+    double max_trade_volume = 52;
+
+    // Status de negociação
+    TradingStatus trading_status = 53;
+
+    // Está em leilão
+    bool is_auction = 54;
+
+    // É negociável
+    bool is_negotiable = 55;
+
+    // Código de negociação do ativo
+    string symbol = 56;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Atualização de dados de cotação
+message QuoteUpdate {
+
+    // Lista de campos atualizados
+    repeated QuoteFieldUpdate updated_fields = 1;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Atualização de um campo único de dados de cotação
+message QuoteFieldUpdate {
+
+    // Campo atualizado e seu valor
+    oneof field {
+
+        // Dados completos de cotação
+        Quote quote = 127;
+
+        string date_time = 1;
+        int64 last_trade_id = 2;
+        double last_trade_price = 3;
+        double last_trade_quantity = 4;
+        int64 last_trade_buy_broker_id = 5;
+        int64 last_trade_sell_broker_id = 6;
+        TradeAggressor last_trade_aggressor = 7;
+        double buyer_aggression_quantity = 8;
+        double seller_aggression_quantity = 9;
+        double buyer_aggression_rate = 10;
+        double seller_aggression_rate = 11;
+        double bid_price = 13;
+        double bid_quantity = 14;
+        double ask_price = 15;
+        double ask_quantity = 16;
+        double previous_close_price = 17;
+        double open_price = 18;
+        double high = 19;
+        double low = 20;
+        int32 number_of_trades = 21;
+        double quantity = 22;
+        double volume = 23;
+        double vwap = 24;
+        double change = 25;
+        double change_percent = 26;
+        double previous_settlement_price = 27;
+        double settlement_price = 28;
+        string theoretical_open_date_time = 29;
+        double theoretical_price = 30;
+        double theoretical_quantity = 31;
+        double theoretical_change = 32;
+        double theoretical_change_percentage = 33;
+        double imbalance_quantity = 34;
+        ImbalanceCondition imbalance_condition = 35;
+        double hard_limit_high = 36;
+        double hard_limit_low = 37;
+        double rejection_band_high_percentage = 38;
+        double rejection_band_low_percentage = 39;
+        double rejection_band_high = 40;
+        double rejection_band_low = 41;
+        double auction_band_high_percent = 42;
+        double auction_band_low_percent = 43;
+        double auction_band_high = 44;
+        double auction_band_low = 45;
+        double static_limit_high = 46;
+        double static_limit_low = 47;
+        double reference_price = 48;
+        double buy_reference_price = 49;
+        double sell_reference_price = 50;
+        double average_daily_traded_volume = 51;
+        double max_trade_volume = 52;
+        TradingStatus trading_status = 53;
+        bool is_auction = 54;
+        bool is_negotiable = 55;
+    }
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Condição de desbalanceamento
+enum ImbalanceCondition {
+
+    // Nenhum
+    IMBALANCE_CONDITION_NONE = 0;
+
+    // Há mais compradores que vendedores
+    MORE_BUYERS = 1;
+
+    // Há mais vendedores que compradores
+    MORE_SELLERS = 2;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
+
+// Estado de negociação
+enum TradingStatus {
+
+    // Nenhum
+    TRADING_STATUS_NONE = 0;
+
+    // Pausado
+    PAUSE = 2;
+
+    // Fechado
+    CLOSE = 4;
+
+    // Aberto
+    OPEN = 17;
+
+    // Proibido
+    FORBIDDEN = 18;
+
+    // Desconhecido ou inválido
+    UNKNOWN_OR_INVALID = 20;
+
+    // Reservado
+    RESERVED = 21;
+
+    // Chamada final de fechamento
+    FINAL_CLOSING_CALL = 101;
+}
+
+//———————————————————————————————————————————————————————————————————————————————————————————————————————
